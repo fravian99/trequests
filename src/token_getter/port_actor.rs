@@ -44,17 +44,14 @@ impl ListenerActor<HashMap<String, Vec<String>>> {
         loop {
             let (tcp_stream, _) = self.listener.accept().await.unwrap();
             let io = TokioIo::new(tcp_stream);
-            if let Err(http_err) = http1::Builder::new()
+            let conn = http1::Builder::new()
                 .keep_alive(true)
                 .serve_connection(
                     io,
-                    service_fn(|request: hyper::Request<hyper::body::Incoming>| async {
-                        let request = request;
-                        self.handle(request).await
-                    }),
+                    service_fn(|request| async { self.handle(request).await }),
                 )
-                .await
-            {
+                .await;
+            if let Err(http_err) = conn {
                 eprintln!("Error while serving HTTP connection: {}", http_err);
             }
         }

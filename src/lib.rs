@@ -13,10 +13,11 @@ pub mod token_getter;
 mod util;
 
 pub const URL: &str = "wss://eventsub.wss.twitch.tv/ws";
+const FILE: &str = "env.toml";
 
 pub async fn get_token() -> Result<(User, Bot, String), TRequestsError> {
     println!("Getting client id");
-    let file_variables = util::open_file().await?;
+    let file_variables = util::open_file(FILE).await?;
 
     let FileVariables {
         client_id,

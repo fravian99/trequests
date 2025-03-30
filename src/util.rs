@@ -49,9 +49,8 @@ pub async fn tcp_addres(url: &str) -> Result<SocketAddr, TokenError> {
     Ok(address)
 }
 
-pub async fn open_file() -> Result<FileVariables, GettingDataError> {
-    const FILE: &str = "env.toml";
-    let string = tokio::fs::read_to_string(FILE).await?;
+pub async fn open_file(filename: &str) -> Result<FileVariables, GettingDataError> {
+    let string = tokio::fs::read_to_string(filename).await?;
     let file_variables = toml::from_str(&string)?;
     Ok(file_variables)
 }
