@@ -1,4 +1,4 @@
-use errors::ColgadoRequestsError;
+use errors::TRequestsError;
 use models::{
     file_variables::FileVariables,
     info::{Bot, User},
@@ -14,7 +14,7 @@ mod util;
 
 pub const URL: &str = "wss://eventsub.wss.twitch.tv/ws";
 
-pub async fn get_token() -> Result<(User, Bot, String), ColgadoRequestsError> {
+pub async fn get_token() -> Result<(User, Bot, String), TRequestsError> {
     println!("Getting client id");
     let file_variables = util::open_file().await?;
 
@@ -45,7 +45,7 @@ pub async fn subscribe_to_wb(
     session_id: &str,
     broadcaster_user_id: &str,
     user_id: &str,
-) -> Result<(), ColgadoRequestsError> {
+) -> Result<(), TRequestsError> {
     println!("Starting subscription");
     requests::websocket_subscription(bot_info, session_id, broadcaster_user_id, user_id).await?;
     println!("Suscription to websocket succesfull");
@@ -57,7 +57,7 @@ pub async fn send_msg(
     broadcaster_user_id: &str,
     user_id: &str,
     message: &str,
-) -> Result<(), ColgadoRequestsError> {
+) -> Result<(), TRequestsError> {
     send_msg_request(bot_info, broadcaster_user_id, user_id, message).await?;
     Ok(())
 }

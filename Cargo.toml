@@ -1,6 +1,6 @@
 [package]
 include = ["../.env.toml"]
-name = "colgado-requests"
+name = "trequests"
 version = "0.2.0"
 edition = "2021"
 

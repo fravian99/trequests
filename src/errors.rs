@@ -2,7 +2,7 @@ use std::io;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
-pub enum ColgadoRequestsError {
+pub enum TRequestsError {
     #[error("Client id not found")]
     VarError {
         #[from]
