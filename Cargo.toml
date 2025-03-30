@@ -2,7 +2,7 @@
 include = ["../.env.toml"]
 name = "trequests"
 version = "0.2.0"
-edition = "2021"
+edition = "2024"
 
 [dependencies]
 http-body-util = "0.1.2"
