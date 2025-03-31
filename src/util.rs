@@ -1,7 +1,4 @@
-use crate::{
-    errors::{GettingDataError, TokenError},
-    models::file_variables::FileVariables,
-};
+use crate::errors::TokenError;
 use std::{collections::HashMap, net::SocketAddr};
 use tokio::net::lookup_host;
 use url::Url;
@@ -47,12 +44,6 @@ pub async fn tcp_addres(url: &str) -> Result<SocketAddr, TokenError> {
         }
     };
     Ok(address)
-}
-
-pub async fn open_file(filename: &str) -> Result<FileVariables, GettingDataError> {
-    let string = tokio::fs::read_to_string(filename).await?;
-    let file_variables = toml::from_str(&string)?;
-    Ok(file_variables)
 }
 
 #[cfg(test)]
