@@ -3,7 +3,7 @@ use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum TRequestsError {
-    #[error("Client id not found")]
+    #[error("Client id not found: {}", err)]
     VarError {
         #[from]
         err: GettingDataError,
