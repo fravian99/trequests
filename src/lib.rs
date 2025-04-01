@@ -1,10 +1,8 @@
 use errors::{GettingDataError, TRequestsError};
-use models::{
-    file_variables::FileVariables,
-    info::{Bot, User},
-};
+use models::info::{Bot, User};
 
 use requests::send_msg_request;
+use serde::de::DeserializeOwned;
 use token_getter::token_flow;
 pub mod errors;
 pub mod models;
@@ -16,7 +14,10 @@ pub const URL: &str = "wss://eventsub.wss.twitch.tv/ws";
 
 pub type TRequestsResult<T> = Result<T, TRequestsError>;
 
-pub async fn open_file(filename: &str) -> Result<FileVariables, GettingDataError> {
+pub async fn open_file<T>(filename: &str) -> Result<T, GettingDataError>
+where
+    T: DeserializeOwned,
+{
     let string = tokio::fs::read_to_string(filename).await?;
     let file_variables = toml::from_str(&string)?;
     Ok(file_variables)
