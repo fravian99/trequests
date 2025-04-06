@@ -1,8 +1,16 @@
 use core::str;
 
-use crate::models::{
-    info::Bot,
-    requests::{send_msg_request::SendMsgRequest, wb_subscription::EventSubRequestListenerBuilder},
+use crate::{
+    TRequestsResult,
+    models::{
+        info::Bot,
+        requests::{
+            response::UnpagedResponse,
+            send_msg_request::SendMsgRequest,
+            user_getter::{UserGetterRequest, UserGetterResponse},
+            wb_subscription::EventSubRequestListenerBuilder,
+        },
+    },
 };
 
 pub async fn websocket_subscription(
@@ -44,4 +52,20 @@ pub async fn send_msg_request(
     let response = request.send().await?;
     response.error_for_status()?;
     Ok(())
+}
+
+pub async fn get_users(
+    bot_info: &Bot,
+    user: &UserGetterRequest<'_>,
+) -> TRequestsResult<Vec<UserGetterResponse>> {
+    let url = "https://api.twitch.tv/helix/users";
+
+    let request = reqwest::Client::new()
+        .get(url)
+        .header("Client-Id", &bot_info.client_id)
+        .bearer_auth(&bot_info.access_token)
+        .query(user);
+    let response = request.send().await?;
+    let users_getter_response: UnpagedResponse<UserGetterResponse> = response.json().await?;
+    Ok(users_getter_response.data)
 }
