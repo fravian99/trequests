@@ -9,3 +9,12 @@ pub struct Bot {
     pub(crate) client_id: String,
     pub(crate) access_token: String,
 }
+
+impl Bot {
+    pub fn new(client_id: String, access_token: String) -> Self {
+        Bot {
+            client_id,
+            access_token,
+        }
+    }
+}
