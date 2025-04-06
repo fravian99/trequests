@@ -32,10 +32,9 @@ pub async fn get_token(
     println!("Token received");
 
     println!("Validating token and getting user_id");
-    let (user_id, user_nick) = token_flow::validate_token(&access_token).await?;
+    let user = token_flow::validate_token(&access_token).await?;
     println!("Valid token");
 
-    let user = User { user_id, user_nick };
     let bot = Bot {
         client_id,
         access_token,

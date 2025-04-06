@@ -1,5 +1,5 @@
 use super::port_actor::ListenerHandle;
-use crate::errors::TokenError;
+use crate::{errors::TokenError, models::info::User};
 use crate::util;
 
 use rand::distributions::{Alphanumeric, DistString};
@@ -78,7 +78,7 @@ async fn listen_port(listener: TcpListener) -> Result<HashMap<String, Vec<String
     Err(TokenError::TokenNotReceived)
 }
 
-pub async fn validate_token(token: &str) -> Result<(String, String), TokenError> {
+pub async fn validate_token(token: &str) -> Result<User, TokenError> {
     let token = "OAuth ".to_owned() + token;
     let response = reqwest::Client::new()
         .get("https://id.twitch.tv/oauth2/validate")
@@ -98,6 +98,6 @@ pub async fn validate_token(token: &str) -> Result<(String, String), TokenError>
         (Some(user_id), Some(user_nick)) => (user_id.to_owned(), user_nick.to_owned()),
         _ => return Err(TokenError::DeserializingError),
     };
-
-    Ok((user_id, user_nick))
+    let user = User { user_id, user_nick };
+    Ok(user)
 }
