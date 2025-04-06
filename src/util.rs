@@ -9,22 +9,19 @@ pub fn get_params(request: &hyper::Request<hyper::body::Incoming>) -> HashMap<St
     let mut params: HashMap<String, Vec<String>> = HashMap::new();
     if let Some(query_param) = query {
         let param = url::form_urlencoded::parse(query_param.as_bytes()).into_owned();
-        param
-            .collect::<Vec<(String, String)>>()
-            .iter()
-            .for_each(|element: &(String, String)| {
-                let key = &element.0;
-                let value = params.get_mut(key);
-                match value {
-                    Some(value) => {
-                        value.push(element.1.clone());
-                    }
-                    None => {
-                        let value = vec![element.1.clone()];
-                        params.insert(key.clone(), value);
-                    }
-                };
-            });
+        param.for_each(|element: (String, String)| {
+            let key = &element.0;
+            let value = params.get_mut(key);
+            match value {
+                Some(value) => {
+                    value.push(element.1.clone());
+                }
+                None => {
+                    let value = vec![element.1.clone()];
+                    params.insert(key.clone(), value);
+                }
+            };
+        });
     }
 
     params
