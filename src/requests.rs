@@ -1,14 +1,8 @@
 use core::str;
 
-use crate::{
-    TRequestsResult,
-models::{
+use crate::models::{
     info::Bot,
-        requests::{
-send_msg_request::SendMsgRequest,
-wb_subscription::EventSubRequestListenerBuilder,
-},
-    },
+    requests::{send_msg_request::SendMsgRequest, wb_subscription::EventSubRequestListenerBuilder},
 };
 
 pub async fn websocket_subscription(
