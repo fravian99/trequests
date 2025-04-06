@@ -1,7 +1,6 @@
 use errors::{GettingDataError, TRequestsError};
 use models::info::{Bot, User};
 
-use requests::send_msg_request;
 use serde::de::DeserializeOwned;
 use token_getter::token_flow;
 pub mod errors;
@@ -51,15 +50,5 @@ pub async fn subscribe_to_wb(
     println!("Starting subscription");
     requests::websocket_subscription(bot_info, session_id, broadcaster_user_id, user_id).await?;
     println!("Suscription to websocket succesfull");
-    Ok(())
-}
-
-pub async fn send_msg(
-    bot_info: &Bot,
-    broadcaster_user_id: &str,
-    user_id: &str,
-    message: &str,
-) -> TRequestsResult<()> {
-    send_msg_request(bot_info, broadcaster_user_id, user_id, message).await?;
     Ok(())
 }
