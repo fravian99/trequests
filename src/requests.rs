@@ -5,7 +5,8 @@ use crate::{
     models::{
         info::Bot,
         requests::{
-            response::UnpagedResponse,
+            clips::{ClipRequest, ClipResponse},
+            response::{PagedResponse, Pagination, UnpagedResponse},
             send_msg_request::SendMsgRequest,
             user_getter::{UserGetterRequest, UserGetterResponse},
             wb_subscription::EventSubRequestListenerBuilder,
@@ -68,4 +69,19 @@ pub async fn get_users(
     let response = request.send().await?;
     let users_getter_response: UnpagedResponse<UserGetterResponse> = response.json().await?;
     Ok(users_getter_response.data)
+}
+
+pub async fn get_clips(
+    bot_info: &Bot,
+    clip: &ClipRequest<'_>,
+) -> TRequestsResult<(Vec<ClipResponse>, Pagination)> {
+    let request = reqwest::Client::new()
+        .get("https://api.twitch.tv/helix/clips")
+        .header("Client-Id", &bot_info.client_id)
+        .bearer_auth(&bot_info.access_token)
+        .query(clip);
+
+    let response = request.send().await?;
+    let clips: PagedResponse<ClipResponse> = response.json().await?;
+    Ok((clips.data, clips.pagination))
 }
