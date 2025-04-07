@@ -14,7 +14,7 @@ pub struct SendMsgRequest<'a> {
 
 impl<'a> SendMsgRequest<'a> {
     pub fn new(broadcaster_id: &'a str, sender_id: &'a str, message: &'a str) -> Self {
-        let message = format!("[Colgado]: {}", message);
+        let message = message.to_owned();
         Self {
             broadcaster_id,
             sender_id,
@@ -23,14 +23,13 @@ impl<'a> SendMsgRequest<'a> {
         }
     }
 
-    pub fn new_reply(
-        broadcaster_id: &'a str,
-        sender_id: &'a str,
-        message: &'a str,
-        reply_to: &'a str,
-    ) -> Self {
-        let mut send_msg_request = Self::new(broadcaster_id, sender_id, message);
-        send_msg_request.reply_to = Some(reply_to);
-        send_msg_request
+    pub fn reply_to(mut self, reply_to: &'a str) -> Self {
+        self.reply_to = Some(reply_to);
+        self
+    }
+
+    pub fn bot_name(mut self, bot_name: &'a str) -> Self {
+        self.message = format!("[{}]: {}", bot_name, self.message);
+        self
     }
 }
