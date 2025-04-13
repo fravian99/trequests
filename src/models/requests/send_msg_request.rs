@@ -28,6 +28,7 @@ impl<'a> SendMsgRequest<'a> {
         self
     }
 
+    // Adds the name of the bot to the message
     pub fn bot_name(mut self, bot_name: &'a str) -> Self {
         self.message = format!("[{}]: {}", bot_name, self.message);
         self

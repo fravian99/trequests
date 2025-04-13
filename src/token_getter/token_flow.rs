@@ -1,10 +1,9 @@
 use super::port_actor::ListenerHandle;
+use crate::errors::TokenError;
 use crate::models::scope::{Scope, Scopes};
 use crate::util;
-use crate::{errors::TokenError, models::info::User};
 
 use rand::distributions::{Alphanumeric, DistString};
-use reqwest::header;
 use std::{collections::HashMap, ops::Deref};
 use tokio::net::TcpListener;
 
@@ -60,13 +59,13 @@ fn get_authorization_url(
     scopes: &[Scope],
 ) -> String {
     const RESPONSE_TYPE: &str = "token";
-    let scopes = Scopes::new(scopes).to_string();
+    let scopes = &Scopes::new(scopes).to_string();
 
     let params: [(&str, &str); 5] = [
         ("client_id", client_id),
         ("redirect_uri", redirect_url),
         ("response_type", RESPONSE_TYPE),
-        ("scope", scopes.as_str()),
+        ("scope", scopes),
         ("state", state),
     ];
     let mut url = "https://id.twitch.tv/oauth2/authorize?".to_owned();
@@ -86,28 +85,4 @@ async fn listen_port(listener: TcpListener) -> Result<HashMap<String, Vec<String
 
     listener_handle.kill_actor();
     Err(TokenError::TokenNotReceived)
-}
-
-pub async fn validate_token(token: &str) -> Result<User, TokenError> {
-    let token = "OAuth ".to_owned() + token;
-    let response = reqwest::Client::new()
-        .get("https://id.twitch.tv/oauth2/validate")
-        .header(header::AUTHORIZATION, token)
-        .send()
-        .await;
-    let response: serde_json::Value = match response {
-        Ok(response) if response.status() == 200 => response.json().await?,
-        Ok(_) => return Err(TokenError::InvalidToken),
-        Err(_) => return Err(TokenError::DeserializingError),
-    };
-
-    let user_id = response["user_id"].as_str();
-    let user_nick = response["login"].as_str();
-
-    let (user_id, user_nick) = match (user_id, user_nick) {
-        (Some(user_id), Some(user_nick)) => (user_id.to_owned(), user_nick.to_owned()),
-        _ => return Err(TokenError::DeserializingError),
-    };
-    let user = User { user_id, user_nick };
-    Ok(user)
 }

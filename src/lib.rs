@@ -4,6 +4,7 @@ use models::{
     scope::Scope,
 };
 
+use requests::{auth, eventsub};
 use serde::de::DeserializeOwned;
 use token_getter::token_flow;
 pub mod errors;
@@ -35,7 +36,7 @@ pub async fn get_token(
     println!("Token received");
 
     println!("Validating token and getting user_id");
-    let user = token_flow::validate_token(&access_token).await?;
+    let user = auth::validate_token(&access_token).await?;
     println!("Valid token");
 
     let bot = Bot {
@@ -52,7 +53,7 @@ pub async fn subscribe_to_wb(
     user_id: &str,
 ) -> TRequestsResult<()> {
     println!("Starting subscription");
-    requests::websocket_subscription(bot_info, session_id, broadcaster_user_id, user_id).await?;
+    eventsub::websocket_subscription(bot_info, session_id, broadcaster_user_id, user_id).await?;
     println!("Suscription to websocket succesfull");
     Ok(())
 }

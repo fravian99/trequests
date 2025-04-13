@@ -64,7 +64,8 @@ impl ListenerActor<HashMap<String, Vec<String>>> {
         let params = util::get_params(&request);
         let response: &str = if params.contains_key("access_token") {
             let _ = self.sender.send(Some(params)).await;
-            "<html>
+            r#"<!doctype html>
+            <html>
                 <head>
                     <style>
                         * {
@@ -74,11 +75,14 @@ impl ListenerActor<HashMap<String, Vec<String>>> {
                     </style>
                 </head>
                 <body>
-                    Access token received
+                    <h1>Access token received</h1>
+                    Close this window
+
                 </body>
-            </html>"
+            </html>"#
         } else if request.uri().query().is_none() {
-            "<html>
+            r#"<!doctype html>
+            <html>
                 <body>
                     <script>
                         let urlString = window.location.toString();
@@ -86,10 +90,11 @@ impl ListenerActor<HashMap<String, Vec<String>>> {
                         window.location.replace(urlString);
                     </script>
                 </body>
-            </html>"
+            </html>"#
         } else {
             let _ = self.sender.send(None).await;
-            "<html>
+            r#"<!doctype html>
+            <html>
                 <head>
                     <style>
                         * {
@@ -101,7 +106,7 @@ impl ListenerActor<HashMap<String, Vec<String>>> {
                 <body>
                     Error: Access token not found
                 </body>
-            </html>"
+            </html>"#
         };
         let mut response = hyper::Response::new(Full::new(Bytes::from(response)));
         response.headers_mut().append(
