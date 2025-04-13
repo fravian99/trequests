@@ -1,13 +1,18 @@
 use super::port_actor::ListenerHandle;
-use crate::{errors::TokenError, models::info::User};
+use crate::models::scope::{Scope, Scopes};
 use crate::util;
+use crate::{errors::TokenError, models::info::User};
 
 use rand::distributions::{Alphanumeric, DistString};
 use reqwest::header;
 use std::{collections::HashMap, ops::Deref};
 use tokio::net::TcpListener;
 
-pub async fn get_token<T>(client_id: &str, redirect_urls: &[T]) -> Result<String, TokenError>
+pub async fn get_token<T>(
+    client_id: &str,
+    redirect_urls: &[T],
+    scopes: &[Scope],
+) -> Result<String, TokenError>
 where
     T: Deref<Target = str>,
 {
@@ -25,7 +30,7 @@ where
     let (listener, redirect_url) = (listener?, redirect_url?);
 
     let state = Alphanumeric.sample_string(&mut rand::thread_rng(), 16);
-    let auth_url = get_authorization_url(client_id, &state, redirect_url);
+    let auth_url = get_authorization_url(client_id, &state, redirect_url, scopes);
     open::that(auth_url)?;
     let hash_map = listen_port(listener).await?;
     let token: &[String] = match hash_map.get("access_token") {
@@ -48,15 +53,20 @@ where
 
 /// Get the auth url of twitch to get the access token
 ///
-fn get_authorization_url(client_id: &str, state: &str, redirect_url: &str) -> String {
+fn get_authorization_url(
+    client_id: &str,
+    state: &str,
+    redirect_url: &str,
+    scopes: &[Scope],
+) -> String {
     const RESPONSE_TYPE: &str = "token";
-    const SCOPE: &str = "user:read:chat+user:write:chat";
+    let scopes = Scopes::new(scopes).to_string();
 
     let params: [(&str, &str); 5] = [
         ("client_id", client_id),
         ("redirect_uri", redirect_url),
         ("response_type", RESPONSE_TYPE),
-        ("scope", SCOPE),
+        ("scope", scopes.as_str()),
         ("state", state),
     ];
     let mut url = "https://id.twitch.tv/oauth2/authorize?".to_owned();

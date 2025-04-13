@@ -1,5 +1,8 @@
 use errors::{GettingDataError, TRequestsError};
-use models::info::{Bot, User};
+use models::{
+    info::{Bot, User},
+    scope::Scope,
+};
 
 use serde::de::DeserializeOwned;
 use token_getter::token_flow;
@@ -25,9 +28,10 @@ where
 pub async fn get_token(
     client_id: String,
     redirect_urls: &[String],
+    scopes: &[Scope],
 ) -> TRequestsResult<(User, Bot)> {
     println!("Getting token");
-    let access_token = token_flow::get_token(&client_id, redirect_urls).await?;
+    let access_token = token_flow::get_token(&client_id, redirect_urls, scopes).await?;
     println!("Token received");
 
     println!("Validating token and getting user_id");
