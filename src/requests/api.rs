@@ -26,6 +26,12 @@ pub async fn send_msg_request(
     Ok(())
 }
 
+impl SendMsgRequest<'_> {
+    pub async fn send(&self, bot_info: &Bot) -> Result<(), reqwest::Error> {
+        send_msg_request(bot_info, self).await
+    }
+}
+
 pub async fn get_users(
     bot_info: &Bot,
     user: &UserGetterRequest<'_>,
@@ -42,6 +48,12 @@ pub async fn get_users(
     Ok(users_getter_response.data)
 }
 
+impl UserGetterRequest<'_> {
+    pub async fn get(&self, bot_info: &Bot) -> TRequestsResult<Vec<UserGetterResponse>> {
+        get_users(bot_info, self).await
+    }
+}
+
 pub async fn get_clips(
     bot_info: &Bot,
     clip: &ClipRequest<'_>,
@@ -55,4 +67,10 @@ pub async fn get_clips(
     let response = request.send().await?;
     let clips: PagedResponse<ClipResponse> = response.json().await?;
     Ok((clips.data, clips.pagination))
+}
+
+impl ClipRequest<'_> {
+    pub async fn get(&self, bot_info: &Bot) -> TRequestsResult<(Vec<ClipResponse>, Pagination)> {
+        get_clips(bot_info, self).await
+    }
 }
