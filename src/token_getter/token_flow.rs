@@ -3,7 +3,7 @@ use crate::errors::TokenError;
 use crate::models::scope::{Scope, Scopes};
 use crate::util;
 
-use rand::distributions::{Alphanumeric, DistString};
+use rand::distr::{Alphanumeric, SampleString};
 use std::{collections::HashMap, ops::Deref};
 use tokio::net::TcpListener;
 
@@ -28,7 +28,7 @@ where
     }
     let (listener, redirect_url) = (listener?, redirect_url?);
 
-    let state = Alphanumeric.sample_string(&mut rand::thread_rng(), 16);
+    let state = Alphanumeric.sample_string(&mut rand::rng(), 16);
     let auth_url = get_authorization_url(client_id, &state, redirect_url, scopes);
     open::that(auth_url)?;
     let hash_map = listen_port(listener).await?;
