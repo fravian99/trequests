@@ -7,10 +7,11 @@ use tokio::{net::TcpListener, sync::mpsc, task::JoinHandle};
 
 use crate::util;
 
-pub struct ListenerHandle<M> {
+pub(crate) struct ListenerHandle<M> {
     receiver: mpsc::Receiver<M>,
     task: JoinHandle<()>,
 }
+
 impl ListenerHandle<Option<HashMap<String, Vec<String>>>> {
     pub fn new(listener: TcpListener) -> Self {
         let (sender, receiver) = mpsc::channel(10);
@@ -28,10 +29,11 @@ impl ListenerHandle<Option<HashMap<String, Vec<String>>>> {
     }
 }
 
-pub struct ListenerActor<M> {
+struct ListenerActor<M> {
     listener: TcpListener,
     sender: mpsc::Sender<Option<M>>,
 }
+
 impl ListenerActor<HashMap<String, Vec<String>>> {
     pub fn new(
         listener: TcpListener,
@@ -77,7 +79,6 @@ impl ListenerActor<HashMap<String, Vec<String>>> {
                 <body>
                     <h1>Access token received</h1>
                     Close this window
-
                 </body>
             </html>"#
         } else if request.uri().query().is_none() {
