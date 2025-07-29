@@ -54,7 +54,7 @@ impl ListenerActor<HashMap<String, Vec<String>>> {
                 )
                 .await;
             if let Err(http_err) = conn {
-                eprintln!("Error while serving HTTP connection: {}", http_err);
+                eprintln!("Error while serving HTTP connection: {http_err}");
             }
         }
     }

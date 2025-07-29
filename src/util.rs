@@ -51,7 +51,7 @@ mod tests {
     async fn check_tcp_address() {
         let address = tcp_addres("http://localhost:3000/probando-para-que-no-se-vea").await;
         if let Err(address) = &address {
-            println!("Error: {}", address);
+            println!("Error: {address}");
         }
         assert!(address.is_ok());
         if let Ok(address) = address {

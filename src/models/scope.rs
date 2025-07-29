@@ -24,7 +24,7 @@ impl From<&Scope> for String {
 impl Display for Scope {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let string: String = self.into();
-        write!(f, "{}", string)
+        write!(f, "{string}")
     }
 }
 
@@ -62,7 +62,7 @@ impl From<&Scopes<'_>> for String {
 impl Display for Scopes<'_> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let string: String = self.into();
-        write!(f, "{}", string)
+        write!(f, "{string}")
     }
 }
 
