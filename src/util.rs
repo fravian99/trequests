@@ -4,21 +4,18 @@ use tokio::net::lookup_host;
 use url::Url;
 
 pub fn get_params(request: &hyper::Request<hyper::body::Incoming>) -> HashMap<String, Vec<String>> {
-    let uri = request.uri();
-    let query = uri.query();
+    let query = request.uri().query();
     let mut params: HashMap<String, Vec<String>> = HashMap::new();
     if let Some(query_param) = query {
         let param = url::form_urlencoded::parse(query_param.as_bytes()).into_owned();
-        param.for_each(|element: (String, String)| {
-            let key = &element.0;
-            let value = params.get_mut(key);
-            match value {
+        param.for_each(|(key, element_value)| {
+            match params.get_mut(&key) {
                 Some(value) => {
-                    value.push(element.1.clone());
+                    value.push(element_value);
                 }
                 None => {
-                    let value = vec![element.1.clone()];
-                    params.insert(key.clone(), value);
+                    let value = vec![element_value];
+                    params.insert(key, value);
                 }
             };
         });
